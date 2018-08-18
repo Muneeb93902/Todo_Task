@@ -5,3 +5,7 @@ exports.invalidRequestMsg = function () {
 exports.databaseConnectionError = function (moduleName) {
 	return "Database connection failed";
 }
+
+exports.databaseServerError = function (moduleName) {
+	return "Database server connection failed";
+}
