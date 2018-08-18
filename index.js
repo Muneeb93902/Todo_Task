@@ -1,5 +1,6 @@
 var express = require('express')
 var todos = require('./routes/todos');
+var users = require('./routes/users');
 var logger = require('morgan')
 var bodyParser = require('body-parser')
 var cors = require('cors');
@@ -32,10 +33,14 @@ app.get('/', function(request, response) {
 */
 
 app.get('/', function(req, res) {
-    res.sendfile('./public/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+    res.sendfile('./public/view/signup.html'); // load the single view file (angular will handle the page changes on the front-end)
+});
+app.get('/login', function(req, res) {
+    res.sendfile('./public/view/login.html'); // load the single view file (angular will handle the page changes on the front-end)
 });
 
 app.use('/todos', todos); //1 params
+app.use('/users', users); //1 params
 
 
 app.listen(app.get('port'), function() {
