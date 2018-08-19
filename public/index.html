@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<base href="/">
+
+    <style>
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid blue;
+      border-bottom: 16px solid blue;
+      width: 120px;
+      height: 120px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    </style>
+
+	<title>Todo Task Project</title>
+
+	<!-- CSS -->
+	<!-- <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
+
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
+	<!-- JS -->
+	<script src="../bower_components/angular/angular.min.js"></script>
+	<script src="../bower_components/angular-route/angular-route.min.js"></script>
+  <script src="https://rawgithub.com/gsklee/ngStorage/master/ngStorage.js"></script>
+
+        
+    <style>
+        html                    { overflow-y:scroll; }
+        body                    { padding-top:50px; }
+        #todo-list              { margin-bottom:30px; }
+    </style>
+
+
+
+	<!-- ANGULAR CUSTOM -->
+	<script src="js/signup.js"></script>
+	<script src="js/login.js"></script>
+	<script src="js/forgot.js"></script>
+	<script src="js/reset.js"></script>
+	<script src="js/core.js"></script>
+	<script src="js/appRoutes.js"></script>
+	<script src="js/app.js"></script>
+</head>
+<body ng-app="sampleApp" ng-controller="signupController">
+<div class="container">
+	
+	<!-- HEADER -->
+
+	<!-- ANGULAR DYNAMIC CONTENT -->
+	<div ng-view></div>
+
+</div>
+</body>
+</html>

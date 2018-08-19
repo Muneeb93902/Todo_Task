@@ -3,6 +3,8 @@
 
 var ip = 'localhost';
 var database = 'newdb';
+var encryptKey = 'thisispassword';
+var serverUrl = 'http://localhost:5000';
 
 exports.username = function () {
   return username;
@@ -18,4 +20,12 @@ exports.ip = function () {
 
 exports.database = function () {
   return database;
+};
+
+exports.encryptKey = function () {
+  return encryptKey;
+};
+
+exports.serverUrl = function () {
+  return serverUrl;
 };

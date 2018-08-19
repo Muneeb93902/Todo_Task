@@ -14,6 +14,14 @@ exports.emailExistError = function () {
 	return "Email Already exist";
 }
 
+exports.emailSendError = function () {
+	return "Not able to send email";
+}
+
 exports.userNotFoundError = function () {
 	return "User not found of given credential.";
+}
+
+exports.wrongPasswordError = function () {
+	return "Wrong old password.";
 }

@@ -3,7 +3,7 @@
 
 
 
-function mainController($scope, $http) {
+function mainController($scope, $http, $localStorage) {
     $scope.formData = {};
     $scope.product = {};
     $scope.todos = [];
@@ -11,10 +11,14 @@ function mainController($scope, $http) {
     $scope.todoEditShow = false;
     $scope.loaderOverley = false;
 
+    $scope.currentUser = $localStorage.currentUser;
+
+    ///alert($localStorage.currentUser.email);
+
     $scope.deletRecord = function(id,index) {
         if (confirm('Are you sure you want to delete this?')) {
             $scope.loaderOverley = true;
-             $http.delete("/todos/"+id)
+             $http.delete("/todos/"+id + "/" + $scope.currentUser._id)
             .then(function(response){
                 $scope.loaderOverley = false;
                 if(response.error)
@@ -44,7 +48,7 @@ function mainController($scope, $http) {
             var todoBody = {};
             todoBody.text = todoText;
             todoBody.createdAt = new Date();
-            $http.post("/todos", todoBody)
+            $http.post("/todos/" + $scope.currentUser._id, todoBody)
             .then(function(response){
                 if(response.data.error)
                 {
@@ -85,7 +89,7 @@ function mainController($scope, $http) {
             var todoBody = {};
             todoBody.text = todo_updated_text;
 
-            $http.put("/todos/"+$scope.todo_updated_id,todoBody)
+            $http.put("/todos/"+$scope.todo_updated_id + "/" + $scope.currentUser._id,todoBody)
             .then(function(response){
                 if(response.data.error)
                 {
@@ -104,26 +108,23 @@ function mainController($scope, $http) {
         $scope.loaderOverley = true;
         $scope.todos = [];
         // when landing on the page, get all todos and show them
-        $http.get('/todos')
-        .success(function(data) {
+        $http.get('/todos' + "/" + $scope.currentUser._id)
+        .then(function(data) {
             $scope.loaderOverley = false;
-            if(data.error)
+            if(data.data.error)
             {
-                console.log(data.msg);
+                console.log(data.data.msg);
             }
             else
             {
-                $scope.todos = data.item;
-                console.log(data.item);                
+                $scope.todos = data.data.item;
+                console.log(data.data.item);                
             }
-        })
-        .error(function(data) {
-            console.log('Error: ' + data);
         });
     }
 
     $scope.getAllRecord();
 };
 
-angular.module('sampleApp', [])
-.controller('mainController', ['$scope', '$http', mainController]);
+angular.module('MainCtrl', [])
+.controller('mainController', ['$scope', '$http', '$localStorage', mainController]);

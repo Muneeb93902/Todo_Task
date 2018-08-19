@@ -25,21 +25,14 @@ app.use(function (req, res, next) {
     next()
 })
 
-
-/*
-app.get('/', function(request, response) {
-  response.send('Hello World!')
-})
-*/
-
-app.get('/', function(req, res) {
-    res.sendfile('./public/view/signup.html'); // load the single view file (angular will handle the page changes on the front-end)
-});
-app.get('/login', function(req, res) {
-    res.sendfile('./public/view/login.html'); // load the single view file (angular will handle the page changes on the front-end)
-});
-
 app.use('/todos', todos); //1 params
+
+app.get('*', function(req, res) {
+    res.sendfile('./public/index.html');
+});
+
+
+
 app.use('/users', users); //1 params
 
 

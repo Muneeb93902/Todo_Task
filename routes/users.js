@@ -3,9 +3,12 @@ var express = require('express');
 var MongoClient = require('mongodb').MongoClient;
 var router = express.Router();
 var error = require('../utils/errormessages');
-var todo = require('../models/todo');
+var todo = require('../models/user');
+var emailHelper = require('../helper/emailHelper');
+var encryptHelper = require('../helper/encryptHelper');
 var config = require('../_global/config');
 const bcrypt = require('bcrypt');
+var nodemailer = require('nodemailer');
 router.route('/')
     .post(function (req, res) {
 
@@ -13,6 +16,7 @@ router.route('/')
 
           if (err) 
           {
+            client.close();
             console.log(err);
             res.json({error:true, msg:error.databaseConnectionError()});
           }
@@ -20,8 +24,9 @@ router.route('/')
           var db = client.db(config.database());
 
           db.collection('users').findOne({"email" : req.body.email}, function (findErr, result) {
-            console.log(result);
+          
             if (findErr){
+                client.close();
                 res.json({error:true, msg:findErr});
             }
             else
@@ -30,6 +35,7 @@ router.route('/')
             	{
                 var userBody = {};
                 userBody.email = req.body.email;
+                userBody.username = req.body.username;
                 userBody.password = bcrypt.hashSync(req.body.password, 10);
                 userBody.createdAt = new Date();
                 userBody.updatedAt = new Date();
@@ -47,6 +53,7 @@ router.route('/')
             	}
             	else
             	{
+               client.close(); 
                res.json({error:true, msg:error.emailExistError()});        
              	}       
             }
@@ -60,6 +67,7 @@ router.route('/login')
 
           if (err) 
           {
+            client.close();
             console.log(err);
             res.json({error:true, msg:error.databaseConnectionError()});
           }
@@ -68,19 +76,19 @@ router.route('/login')
 
           db.collection('users').findOne({"email" : req.body.email}, function (findErr, result) {
             if (findErr){
+                client.close();
                 res.json({error:true, msg:findErr});
             }
             else
             {
+              client.close();
             	if(result == null)
             	{
-                console.log('11');
                 res.json({error:true, msg:error.userNotFoundError()});        
             	}
             	else
             	{
 
-                console.log(result);
                 var hash = result.password.replace(/^\$2y(.+)$/i, '\$2a$1');
                 
                 bcrypt.compare(req.body.password, hash, function (err, compareResult) {
@@ -92,7 +100,6 @@ router.route('/login')
                       delete result.password;
                       res.json({error:false, item:result});
                     } else {
-                      console.log('22');
                       res.json({error:true, msg:error.userNotFoundError()});        
                     }
                   }
@@ -102,115 +109,110 @@ router.route('/login')
           });
         });
     });
-
-    /*
-    .get(function (req, res) {
+router.route('/resetPassword')
+    .post(function (req, res) {
 
         MongoClient.connect('mongodb://' + config.ip(), function (err, client) {
 
           if (err) 
           {
+            client.close();
             console.log(err);
             res.json({error:true, msg:error.databaseConnectionError()});
           }
 
           var db = client.db(config.database());
 
-          db.collection('todos').find().toArray(function(findErr, todos) {
+          db.collection('users').findOne({"email" : req.body.email}, function (findErr, result) {
             client.close();
             if (findErr){
                 res.json({error:true, msg:findErr});
             }
             else
             {
-                console.log(todos);
-                res.json({error:false, item:todos});
+              if(result == null)
+              {
+                res.json({error:true, msg:error.userNotFoundError()});        
+              }
+              else
+              {
+
+                var text = result.email;
+                var key = encryptHelper.encryptText(text, config.encryptKey());
+                var url = config.serverUrl() + "/VerifyInvitation?key=" + key;
+
+                var emailData = {
+                  username: result.username,
+                  passwordResetURL: url
+                };
+
+                emailHelper.emailDocument("academyideal@gmail.com","myschool",result.email,"Password reset request", 'htmlTemplate/password_reset.html', 'HTML version of the message',emailData, function(error,data){
+                  if(error)
+                  {
+                    res.json({error:true, msg:errormessages.emailSendError()});
+                    console.log(error);
+                  }
+                  else
+                  {
+                    res.json({error:false, item:result});
+                  }
+                });
+              }       
             }
           });
-        }); 
-
+        });
     });
+router.route('/updatePassword')
+    .post(function (req, res) {
 
-    router.route('/:todoId')
-    .delete(function (req, res) {
-        console.log(req.body._id);
         MongoClient.connect('mongodb://' + config.ip(), function (err, client) {
 
-          if (err) 
+          if(err) 
           {
+            client.close();
             console.log(err);
             res.json({error:true, msg:error.databaseConnectionError()});
           }
 
           var db = client.db(config.database());
 
-          var id = new mongoose.Types.ObjectId(req.params.todoId);    
+          var email = encryptHelper.decryptText(req.body.key, config.encryptKey());
 
-          db.collection('todos').remove({"_id":id}, function(findErr, result) {
-            client.close();
+          db.collection('users').findOne({"email" : email}, function (findErr, result) {
             if (findErr){
+                client.close();
                 res.json({error:true, msg:findErr});
             }
             else
             {
-                res.json({error:false, item:result});
+              if(result == null)
+              {
+                client.close();
+                res.json({error:true, msg:error.userNotFoundError()});        
+              }
+              else
+              {
+
+                var userBody = {};
+                userBody.email = result.email;
+                userBody.username = result.username;
+                userBody.password = bcrypt.hashSync(req.body.new_password, 10);
+                userBody.createdAt = result.createdAt;
+                userBody.updatedAt = new Date();
+
+                db.collection('users').update({"_id": result._id}, userBody, function(findErr, result){
+                  client.close();
+                  if (findErr){
+                      res.json({error:true, msg:findErr});
+                  }
+                  else
+                  {
+                      res.json({error:false, item:result});
+                  }
+                });
+              }       
             }
           });
         });
-    })
-    .put(function (req, res) {
-        
-        MongoClient.connect('mongodb://' + config.ip(), function (findErr, client) {
-
-          if (findErr) 
-          {
-            console.log(findErr);
-            res.json({error:true, msg:error.databaseConnectionError()});
-          }
-
-          var db = client.db(config.database());
-
-          var id = new mongoose.Types.ObjectId(req.params.todoId);    
-            var todoBody = {};
-            todoBody.text = req.body.text;
-            todoBody.updatedAt = new Date();
-
-          db.collection('todos').update({"_id": id}, todoBody, function(findErr, result){
-            client.close();
-            if (findErr){
-                res.json({error:true, msg:findErr});
-            }
-            else
-            {
-                res.json({error:false, item:result});
-            }
-          });
-        });
-    })
-    .get(function (req, res) {
-
-        MongoClient.connect('mongodb://' + config.ip(), function (findErr, client) {
-
-          if (findErr) 
-          {
-            console.log(findErr);
-            res.json({error:true, msg:error.databaseConnectionError()});
-          }
-
-          var db = client.db(config.database());
-
-          var id = new mongoose.Types.ObjectId(req.params.todoId);
-          db.collection('todos').findOne({"_id" : id}, function (findErr, result) {
-            client.close();
-            if (findErr){
-                res.json({error:true, msg:findErr});
-            }
-            else
-            {
-                res.json({error:false, item:result});
-            }
-          });
-        });
-    })
-    */
+    });        
 module.exports = router;

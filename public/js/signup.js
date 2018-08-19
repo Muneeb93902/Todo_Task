@@ -1,12 +1,15 @@
 function signupController($scope, $http) {
 
-	$scope.signForm = function(txt_email, txt_password) {
+	$scope.signForm = function(txt_email, txt_password, txt_username) {
         
+        $scope.loaderOverley = true;
         var userBody = {};
         userBody.email = txt_email;
         userBody.password = txt_password;
+        userBody.username = txt_username;
         $http.post("/users", userBody)
         .then(function(response){
+            $scope.loaderOverley = false;
             if(response.data.error)
             {
                console.log(response.data.msg);
@@ -20,30 +23,5 @@ function signupController($scope, $http) {
 	}
 };
 
-
-function loginController($scope, $http) {
-
-	$scope.signForm = function(txt_email, txt_password) {
-            
-        var userBody = {};
-        userBody.email = txt_email;
-        userBody.password = txt_password;
-        $http.post("/users/login", userBody)
-        .then(function(response){
-            if(response.data.error)
-            {
-               console.log(response.data.msg);
-               alert(response.data.msg);
-            }
-            else{
-                alert("User logged in successfully.");              
-            }
-        });
-
-	}
-};
-
-
-angular.module('sampleApp')
-.controller('signupController', ['$scope', '$http',signupController])
-.controller('loginController', ['$scope', '$http', loginController]);
+angular.module('SignupCtrl', [])
+.controller('signupController', ['$scope', '$http', signupController]);
