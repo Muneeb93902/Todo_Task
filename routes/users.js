@@ -9,6 +9,7 @@ var encryptHelper = require('../helper/encryptHelper');
 var config = require('../_global/config');
 const bcrypt = require('bcrypt');
 var nodemailer = require('nodemailer');
+var async = require('async');
 router.route('/')
     .post(function (req, res) {
 
@@ -215,4 +216,82 @@ router.route('/updatePassword')
           });
         });
     });        
+
+    router.route('/allUserData')
+    .get(function (req, res) {
+
+        MongoClient.connect('mongodb://' + config.ip(), function (findErr, client) {
+
+          if (findErr) 
+          {
+            client.close();
+            console.log(findErr);
+            res.json({error:true, msg:error.databaseConnectionError()});
+          }
+          else
+          {
+            var db = client.db(config.database());
+
+            var userId = req.params.userId;
+
+            var id = new mongoose.Types.ObjectId(req.params.todoId);
+
+            db.collection('users').find({}).toArray(function(findErr, users) {
+              
+              if (findErr){
+                  client.close();
+                  res.json({error:true, msg:findErr});
+              }
+              else
+              {
+
+                var returnArray = [];
+
+                async.forEachSeries(users, function (user, callback) {
+                    delete user.password;
+                    var userId = "" + user._id;
+                    delete user._id;
+                    // delete user.email;
+                    user.todos = [];
+
+                    db.collection('todos').find({"userId":userId}).toArray(function(findErr, todos) {
+
+                      if(findErr)
+                        callback();
+                      else
+                      {
+                        if(todos != null && todos.length > 0)
+                        {
+                          console.log("todos.length " + todos.length);
+                          user.todos = todos;                          
+                        }
+
+                        returnArray.push(user);
+                        callback();
+                      }
+
+                    });
+
+                    /*
+                    if (modelObject.category.toLowerCase() == 'property') {
+                        financialHelper.evaluatePropertyWorthZooplaAndConvert(customer.app, modelObject, false, function (err, updatedAsset) {
+                            returnArray.push(updatedAsset);
+                            callback();
+                        });
+                    }
+                    else {
+                        returnArray.push(modelObject);
+                        callback();
+                    }
+                    */
+                }, function (err) {
+                    res.json({error:err, item:returnArray});
+                });
+
+                  // res.json({error:false, item:result});
+              }
+            });
+          }
+        });
+    });
 module.exports = router;

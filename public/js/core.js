@@ -12,6 +12,8 @@ function mainController($scope, $http, $localStorage) {
     $scope.loaderOverley = false;
 
     $scope.currentUser = $localStorage.currentUser;
+    $scope.currentUsername = $scope.currentUser.username;
+    $scope.currentEmail = $scope.currentUser.email;
 
     ///alert($localStorage.currentUser.email);
 
@@ -123,7 +125,27 @@ function mainController($scope, $http, $localStorage) {
         });
     }
 
+    $scope.getAllRecord2 = function() {    
+        $scope.loaderOverley = true;
+        $scope.allUserData = [];
+        // when landing on the page, get all todos and show them
+        $http.get('/users/allUserData')
+        .then(function(data) {
+            $scope.loaderOverley = false;
+            if(data.data.error)
+            {
+                console.log(data.data.msg);
+            }
+            else
+            {
+                $scope.allUserData = data.data.item;                
+            }
+        });
+    }
+
     $scope.getAllRecord();
+
+    $scope.getAllRecord2();
 };
 
 angular.module('MainCtrl', [])

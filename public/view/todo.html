@@ -23,32 +23,60 @@
                                 </i> Add New Todos</button>
             </div>
 
-            <table st-table="display_records" st-safe-src="employees" class="table table-striped">
-            <thead>
-                <tr>
-                    <th width="100px">S. No</th>
-                    <th width="70%">Todo Description</th>
-                    <th width="100px">Updated Date/Time</th>
-                </tr>
 
-            </thead>
-            <tbody>
-                <tr st-select-row="row" st-select-mode="multiple" ng-repeat="todo in todos" class="ng-scope ng-isolate-scope">
-                    <td class="ng-binding">{{ $index + 1 }}</td>
-                    
-                    <td class="ng-binding">{{todo.text}}</td>
-                    <td class="ng-binding" style="width: 150px;">{{todo.updatedAt | date :'dd/MM/yyyy' }} {{todo.updatedAt | date :'shortTime'}}</td>
-                    <td>
-                        <div class="btn-group" role="group" aria-label="...">
-                          <button type="button" class="btn btn-default" ng-click="editRecord(todo.text,todo._id)"><i class="glyphicon glyphicon-pencil">
-                                </i></button>
-                          <button type="button" class="btn btn-danger" ng-click="deletRecord(todo._id,$index)"><i class="glyphicon glyphicon-trash">
-                                </i></button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+
+            <h4>Current User : {{currentUsername}}</h4>
+            <table st-table="display_records" st-safe-src="employees" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th width="100px">S. No</th>
+                        <th width="70%">Todo Description</th>
+                        <th width="100px">Updated Date/Time</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    <tr st-select-row="row" st-select-mode="multiple" ng-repeat="todo in todos" class="ng-scope ng-isolate-scope">
+                        <td class="ng-binding">{{ $index + 1 }}</td>
+                        
+                        <td class="ng-binding">{{todo.text}}</td>
+                        <td class="ng-binding" style="width: 150px;">{{todo.updatedAt | date :'dd/MM/yyyy' }} {{todo.updatedAt | date :'shortTime'}}</td>
+                        <td>
+                            <div class="btn-group" role="group" aria-label="...">
+                              <button type="button" class="btn btn-default" ng-click="editRecord(todo.text,todo._id)"><i class="glyphicon glyphicon-pencil">
+                                    </i></button>
+                              <button type="button" class="btn btn-danger" ng-click="deletRecord(todo._id,$index)"><i class="glyphicon glyphicon-trash">
+                                    </i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <h4>Other User Data</h4>
+
+            <div ng-repeat="user in allUserData" ng-hide="{{user.email == currentEmail}}">
+                <h4>Username : {{user.username}}</h4>
+                <table st-table="display_records" st-safe-src="employees" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th width="100px">S. No</th>
+                            <th width="70%">Todo Description</th>
+                            <th width="100px">Updated Date/Time</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr st-select-row="row" st-select-mode="multiple" ng-repeat="todo in user.todos" class="ng-scope ng-isolate-scope">
+                            <td class="ng-binding">{{ $index + 1 }}</td>
+                            
+                            <td class="ng-binding">{{todo.text}}</td>
+                            <td class="ng-binding" style="width: 150px;">{{todo.updatedAt | date :'dd/MM/yyyy' }} {{todo.updatedAt | date :'shortTime'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>    
 
         </div>
     </div>

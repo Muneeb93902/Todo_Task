@@ -26,14 +26,14 @@ app.use(function (req, res, next) {
 })
 
 app.use('/todos', todos); //1 params
-
+app.use('/users', users); //1 params
 app.get('*', function(req, res) {
     res.sendfile('./public/index.html');
 });
 
 
 
-app.use('/users', users); //1 params
+// app.use('/users', users); //1 params
 
 
 app.listen(app.get('port'), function() {
