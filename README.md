@@ -3,7 +3,7 @@ Simple login and signup with todo functionality
 
 npm install // Install libraries
 
-npm start 
+npm start // start server
 
 database = 'newdb' // database can be changed from code
 serverUrl = 'http://localhost:5000'; // port can be changed from code
