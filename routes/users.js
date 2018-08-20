@@ -10,6 +10,7 @@ var config = require('../_global/config');
 const bcrypt = require('bcrypt');
 var nodemailer = require('nodemailer');
 var async = require('async');
+
 router.route('/')
     .post(function (req, res) {
 

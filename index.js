@@ -3,6 +3,13 @@ var todos = require('./routes/todos');
 var users = require('./routes/users');
 var logger = require('morgan')
 var bodyParser = require('body-parser')
+var sendFCM = require("./send.js");
+
+
+
+
+
+
 var cors = require('cors');
 var app = express()
 
@@ -27,6 +34,14 @@ app.use(function (req, res, next) {
 
 app.use('/todos', todos); //1 params
 app.use('/users', users); //1 params
+/** // for firebase
+app.get("/service-worker.js", function(req, res){
+  res.sendFile(path.resolve(__dirname, "public", "service-worker.js"));
+});
+app.get("/firebase-messaging-sw.js", function(req, res){
+  res.sendFile(__dirname  + "/firebase-messaging.js");
+});
+**/
 app.get('*', function(req, res) {
     res.sendfile('./public/index.html');
 });
@@ -37,5 +52,6 @@ app.get('*', function(req, res) {
 
 
 app.listen(app.get('port'), function() {
-  console.log("Node app is running at localhost:" + app.get('port'))
+  console.log("Node app is running at localhost:" + app.get('port'));
+  sendFCM.initializeFCMApp();
 })

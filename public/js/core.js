@@ -1,8 +1,3 @@
-// public/core.js
-//var sampleApp = angular.module('sampleApp', ["ui.bootstrap"]);
-
-
-
 function mainController($scope, $http, $localStorage) {
     $scope.formData = {};
     $scope.product = {};
@@ -15,7 +10,52 @@ function mainController($scope, $http, $localStorage) {
     $scope.currentUsername = $scope.currentUser.username;
     $scope.currentEmail = $scope.currentUser.email;
 
-    ///alert($localStorage.currentUser.email);
+    /** Firebase Code
+      // Initialize Firebase
+    var config = {
+    apiKey: "AIzaSyD8J75x4YCkGMcX0CUISgLtKXGxHSoM45w",
+    authDomain: "dynamic-branch-199113.firebaseapp.com",
+    databaseURL: "https://dynamic-branch-199113.firebaseio.com",
+    projectId: "dynamic-branch-199113",
+    storageBucket: "dynamic-branch-199113.appspot.com",
+    messagingSenderId: "918885454907"
+    };
+
+    firebase.initializeApp(config);
+
+    const messaging = firebase.messaging();
+
+    messaging.usePublicVapidKey("BC_nfsOu_GGGN0WS-fxOqol3Q24NevsdHLHxElP1K83Q_BReiC1WSYzSvNulIYihQpGzmHFbOaKIHgHt66fWDX4");
+
+    messaging.requestPermission().then(function() {
+
+        messaging.getToken().then(function(currentToken) {
+          if (currentToken) {
+            console.log('currentToken :', currentToken);
+            // sendTokenToServer(currentToken);
+            // updateUIForPushEnabled(currentToken);
+          } else {
+            // Show permission request.
+            console.log('No Instance ID token available. Request permission to generate one.');
+            // Show permission UI.
+            // updateUIForPushPermissionRequired();
+            // setTokenSentToServer(false);
+          }
+        }).catch(function(err) {
+          console.log('An error occurred while retrieving token. ', err);
+          // showToken('Error retrieving Instance ID token. ', err);
+          // setTokenSentToServer(false);
+        });
+
+
+      // console.log('Notification permission granted.');
+      // TODO(developer): Retrieve an Instance ID token for use with FCM.
+      // ...
+    }).catch(function(err) {
+      console.log('Unable to get permission to notify.', err);
+    });
+    **/
+
 
     $scope.deletRecord = function(id,index) {
         if (confirm('Are you sure you want to delete this?')) {
@@ -125,7 +165,7 @@ function mainController($scope, $http, $localStorage) {
         });
     }
 
-    $scope.getAllRecord2 = function() {    
+    $scope.getAllUserRecord = function() {    
         $scope.loaderOverley = true;
         $scope.allUserData = [];
         // when landing on the page, get all todos and show them
@@ -145,7 +185,7 @@ function mainController($scope, $http, $localStorage) {
 
     $scope.getAllRecord();
 
-    $scope.getAllRecord2();
+    $scope.getAllUserRecord();
 };
 
 angular.module('MainCtrl', [])

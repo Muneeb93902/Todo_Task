@@ -9,24 +9,30 @@ function resetController($scope, $http, $location) {
     }
 
 	$scope.signForm = function(txt_new_password) {
-                
-        var userBody = {};
-        userBody.new_password = txt_new_password;
-        userBody.key = key;
-        $scope.loaderOverley = true;
-        $http.post("/users/updatePassword", userBody)
-        .then(function(response){
-            $scope.loaderOverley = false;
-            if(response.data.error)
-            {
-               console.log(response.data.msg);
-               alert(response.data.msg);
-            }
-            else{
-                alert("Password Updated Successfully.");              
-            }
-        });
+     
+        if(txt_new_password == undefined || txt_new_password.trim().length == 0)
+        {
+            alert("Missing field(s).");
+        }   
+        else{
 
+            var userBody = {};
+            userBody.new_password = txt_new_password;
+            userBody.key = key;
+            $scope.loaderOverley = true;
+            $http.post("/users/updatePassword", userBody)
+            .then(function(response){
+                $scope.loaderOverley = false;
+                if(response.data.error)
+                {
+                   console.log(response.data.msg);
+                   alert(response.data.msg);
+                }
+                else{
+                    alert("Password Updated Successfully.");              
+                }
+            });        
+        }                
 	}
 };
 
