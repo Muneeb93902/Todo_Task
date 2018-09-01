@@ -148,7 +148,7 @@ router.route('/resetPassword')
                   passwordResetURL: url
                 };
 
-                emailHelper.emailDocument("academyideal@gmail.com","myschool",result.email,"Password reset request", 'htmlTemplate/password_reset.html', 'HTML version of the message',emailData, function(error,data){
+                emailHelper.emailDocument("your_email","your_password",result.email,"Password reset request", 'htmlTemplate/password_reset.html', 'HTML version of the message',emailData, function(error,data){
                   if(error)
                   {
                     res.json({error:true, msg:errormessages.emailSendError()});
